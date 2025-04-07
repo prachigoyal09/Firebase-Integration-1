@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Data Display</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Data from Firebase</h1>
+
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <p id="errorMsg" style="color: red;"></p>
+
+    <script>
+        // Replace with your Firebase configuration
+        const firebaseConfig = {
+          // ... your config ...
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the database service
+        const database = firebase.database();
+
+        // Fetch data from Firebase Realtime Database
+        database.ref('users').once('value', (snapshot) => {
+            const users = snapshot.val();
+            if (users) {
+                const tableBody = document.getElementById('userTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear existing data
+
+                for (const userId in users) {
+                    const user = users[userId];
+                    const row = `<tr><td>${user.name}</td><td>${user.email}</td></tr>`;
+                    tableBody.innerHTML += row;
+                }
+            } else {
+                document.getElementById('errorMsg').textContent = 'No data found in Firebase.';
+            }
+        }, (error) => {
+            document.getElementById('errorMsg').textContent = 'Error fetching data: ' + error.message;
+        });
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</body>
+</html>
